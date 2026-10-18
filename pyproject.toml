@@ -1,7 +1,7 @@
 [project]
 name = "simisatool"
-version = "0.1.0-beta"
+version = "0.1.0b0"
 requires-python = ">=3.8"
 dependencies = [
-    "simisa=0.1.0-beta",
+    "simisa=0.1.0b0",
 ]
