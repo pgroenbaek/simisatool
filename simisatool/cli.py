@@ -89,18 +89,21 @@ def parse_args() -> argparse.Namespace:
     if args.format is None:
         args.format = "binary" if args.compress else "unicode"
 
-    if args.format == "unicode" and parser.compress:
+    if args.format == "unicode" and args.compress:
         args.format = "ascii"
 
     return args
 
 
 def process_file(input_file: Path, output_file: Path, args: argparse.Namespace) -> Optional[bool]:
-    input_compressed = simisa.is_compressed(input_file)
-    input_binary = simisa.is_binary(input_file)
-    input_unicode = simisa.is_unicode(input_file)
-    input_text = simisa.is_text(input_file)
-    input_filetype = simisa.read_filetype(input_file)
+    input_filepath_str = str(input_file.resolve())
+    output_filepath_str = str(output_file.resolve())
+
+    input_compressed = simisa.is_compressed(input_filepath_str)
+    input_binary = simisa.is_binary(input_filepath_str)
+    input_unicode = simisa.is_unicode(input_filepath_str)
+    input_text = simisa.is_text(input_filepath_str)
+    input_filetype = simisa.read_filetype(input_filepath_str)
 
     if input_compressed is None:
         print(f"{input_file.name}: invalid or unrecognized header", file=sys.stderr)
@@ -151,11 +154,11 @@ def process_file(input_file: Path, output_file: Path, args: argparse.Namespace) 
     load, dump = loaders[input_filetype]
 
     try:
-        data = load(input_file)
+        data = load(input_filepath_str)
 
         dump(
             data,
-            output_file,
+            output_filepath_str,
             compressed=output_compressed,
             binary=output_format == "binary",
             ascii=output_format == "ascii",
