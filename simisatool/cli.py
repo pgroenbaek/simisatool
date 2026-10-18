@@ -63,13 +63,6 @@ def parse_args() -> argparse.Namespace:
     )
 
     parser.add_argument(
-        "-V",
-        "--verbose",
-        action="store_true",
-        help="Enable verbose output.",
-    )
-
-    parser.add_argument(
         "input",
         type=Path,
         help="Input file or directory.",
