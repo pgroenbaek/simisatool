@@ -23,9 +23,6 @@ from pathlib import Path
 from typing import List, Tuple, Optional
 
 
-CLI_VERSION = "0.1.0-beta"
-
-
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="simisatool",
@@ -36,7 +33,7 @@ def parse_args() -> argparse.Namespace:
         "-v",
         "--version",
         action="version",
-        version="%(prog)s " + CLI_VERSION,
+        version="%(prog)s " + simisa.__version__,
         help="Show the version number and exit.",
     )
 
