@@ -17,8 +17,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import simisa
 import argparse
 from pathlib import Path
+
 
 CLI_VERSION = "0.1.0-beta"
 
@@ -81,32 +83,56 @@ def parse_args() -> argparse.Namespace:
     args = parser.parse_args()
 
     if not args.input.exists():
-        parser.error(f"input does not exist: {args.input}")
+        parser.error(f"Input does not exist: {args.input}")
 
     if not (args.input.is_file() or args.input.is_dir()):
-        parser.error(f"input must be a file or directory: {args.input}")
+        parser.error(f"Input must be a file or directory: {args.input}")
 
     if args.output is not None and args.output.exists():
         if args.input.is_file() != args.output.is_file():
-            parser.error("input and output must both be files or both be directories")
+            parser.error("Input and output must both be files or both be directories")
+
+    if args.format == "unicode" and parser.compress:
+        print("Format 'unicode' not supported when compressing, using 'ascii' instead.", file=sys.stderr)
+        args.format = "ascii"
 
     return args
 
 
+def process_file(input_file: Path, output_file: Path) -> None:
+    pass
+
+
 def main() -> None:
     args = parse_args()
+    
+    write_binary = True if args.format == "binary" else False
+    write_unicode = True if args.format == "unicode" else False
+    write_ascii = True if args.format == "ascii" else False
+    write_compressed = True if args.compress else False
+    write_decompressed = True if args.decompress else False
 
-    if args.compress:
-        operation = "compress"
-    elif args.decompress:
-        operation = "decompress"
-    else:
-        operation = "convert"
+    extensions = {".s", ".t", ".w"}
 
-    print(f"Operation: {operation}")
-    print(f"Format:    {args.format}")
-    print(f"Input:     {args.input}")
-    print(f"Output:    {args.output}")
+    input_files = (
+        [args.input]
+        if args.input.is_file()
+        else [
+            path
+            for path in args.input.iterdir()
+            if path.is_file() and path.suffix.lower() in extensions
+        ]
+    )
+
+    for input_file in files:
+        if args.output is None:
+            output_file = input_file
+        elif args.output.is_dir():
+            output_file = args.output / input_file.name
+        else:
+            output_file = args.output
+
+        process_file(input_file, output_file)
 
 
 if __name__ == "__main__":

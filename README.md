@@ -2,7 +2,7 @@
 
 A cross-platform CLI for compressing and decompressing `.s`, `.t`, and `.w` files used with Open Rails and MSTS.
 
-If you need this functionality from within a Python script, then have a look at using the [simisa](https://github.com/pgroenbaek/simisa) module directly instead.
+If you need this functionality from within a Python script, then have a look at using the [simisa](https://github.com/pgroenbaek/simisa) module directly instead using this CLI.
 
 > [!NOTE]
 > **The underlying Python module [simisa](https://github.com/pgroenbaek/simisa) used by this CLI is in a beta testing phase.** The CLI and underlying module is functional and stable enough to use, but further testing and real-world usage are needed to validate their reliability and ensure stability across different use cases and that file output works with all the different tools that exist like TSRE5, TSFV, ffeditc_unicode.exe, etc.
