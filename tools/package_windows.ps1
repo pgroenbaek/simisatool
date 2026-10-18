@@ -51,6 +51,7 @@ Write-Host "==> Building Nuitka executable"
 & $VenvPython -m nuitka `
     --onefile `
     --python-flag=-m `
+    --no-deployment-flag=self-execution `
     "--output-dir=$DistDir" `
     "--output-filename=simisatool.exe" `
     "$RootDir\simisatool"

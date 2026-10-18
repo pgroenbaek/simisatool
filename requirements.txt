@@ -1,1 +1,1 @@
-simisa=0.1.0-beta
+simisa==0.1.0-beta

@@ -30,6 +30,7 @@ echo "==> Building Nuitka executable"
 "$VENV_PYTHON" -m nuitka \
     --onefile \
     --python-flag=-m \
+    --no-deployment-flag=self-execution \
     --output-dir="$DIST_DIR" \
     --output-filename=simisatool \
     "$ROOT_DIR/simisatool"

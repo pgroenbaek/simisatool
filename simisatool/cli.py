@@ -20,11 +20,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import argparse
 from pathlib import Path
 
+CLI_VERSION = "0.1.0-beta"
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="simisatool",
         description="Compress, decompress, or convert a file or directory.",
+    )
+
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version="%(prog)s " + CLI_VERSION,
+        help="Show the version number and exit.",
     )
 
     mode = parser.add_mutually_exclusive_group()
@@ -47,6 +57,13 @@ def parse_args() -> argparse.Namespace:
         choices=("ascii", "unicode", "binary"),
         default="unicode",
         help="Output format (default: unicode).",
+    )
+
+    parser.add_argument(
+        "-V",
+        "--verbose",
+        action="store_true",
+        help="Enable verbose output.",
     )
 
     parser.add_argument(
