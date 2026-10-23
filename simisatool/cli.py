@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import sys
 import simisa
+import logging
 import argparse
 from pathlib import Path
 from typing import List, Tuple, Optional
@@ -55,9 +56,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "-f",
         "--format",
-        choices=("ascii", "unicode", "binary"),
+        choices=("ascii", "utf16le", "binary"),
         default=None,
-        help="Output format (default: binary when compressing, otherwise unicode).",
+        help="Output format (default: binary when compressing, otherwise utf16le).",
+    )
+
+    parser.add_argument(
+        "-V",
+        "--verbose",
+        action="count",
+        default=0,
+        help="Increase verbosity: -V for INFO, -VV for DEBUG.",
     )
 
     parser.add_argument(
@@ -85,9 +94,9 @@ def parse_args() -> argparse.Namespace:
             parser.error("Input and output must both be files or both be directories")
 
     if args.format is None:
-        args.format = "binary" if args.compress else "unicode"
+        args.format = "binary" if args.compress else "utf16le"
 
-    if args.format == "unicode" and args.compress:
+    if args.format == "utf16le" and args.compress:
         args.format = "ascii"
 
     return args
@@ -97,9 +106,19 @@ def process_file(input_file: Path, output_file: Path, args: argparse.Namespace) 
     input_filepath_str = str(input_file.resolve())
     output_filepath_str = str(output_file.resolve())
 
+    if args.verbose >= 2:
+        log_level = logging.DEBUG
+        logging.basicConfig(level=logging.DEBUG)
+    elif args.verbose == 1:
+        log_level = logging.INFO
+        logging.basicConfig(level=logging.INFO)
+    else:
+        log_level = None
+        logging.basicConfig(level=logging.WARNING)
+
     input_compressed = simisa.is_compressed(input_filepath_str)
     input_binary = simisa.is_binary(input_filepath_str)
-    input_unicode = simisa.is_unicode(input_filepath_str)
+    input_utf16le = simisa.is_utf16le(input_filepath_str)
     input_text = simisa.is_text(input_filepath_str)
     input_filetype = simisa.read_filetype(input_filepath_str)
 
@@ -121,8 +140,8 @@ def process_file(input_file: Path, output_file: Path, args: argparse.Namespace) 
         input_format
         for input_format, detected in (
             ("binary", input_binary),
-            ("unicode", input_unicode),
-            ("ascii", input_text and not input_unicode),
+            ("utf16le", input_utf16le),
+            ("ascii", input_text and not input_utf16le),
         )
         if detected is True
     ]
@@ -152,7 +171,7 @@ def process_file(input_file: Path, output_file: Path, args: argparse.Namespace) 
     load, dump = loaders[input_filetype]
 
     try:
-        data = load(input_filepath_str)
+        data = load(input_filepath_str, verbose=log_level)
 
         dump(
             data,
@@ -160,6 +179,7 @@ def process_file(input_file: Path, output_file: Path, args: argparse.Namespace) 
             compressed=output_compressed,
             binary=output_format == "binary",
             ascii=output_format == "ascii",
+            verbose=log_level
         )
     except Exception as exc:
         print(f"{input_file.name}: failed: {exc}", file=sys.stderr)
